@@ -87,11 +87,24 @@ recupLs.forEach((recupL) => {
       baliseItemContentSettingsDelete.appendChild(baliseDeleteItem);
       baliseDeleteItem.textContent = "Supprimer";
 
+      let modifyQuantityItem = document.querySelectorAll(
+        "cart_item_content_quantity"
+      );
+      cart_item_content_quantity.forEach((productQuantity) =>
+        console.log(modifyQuantityItem.dataset.quantity)
+      );
+      
+
+      function modifyQuantity(productQuantity) {
+        let quantity = cart_item_content_quantity();
+        cart_item_content_quantity.filter(p => p.id == productQuantity.id);
+      }
+
       let btnSupprimer = document.querySelectorAll(".deleteItem");
       btnSupprimer.forEach((article) => {
         article.addEventListener("click", (e) => {
           let btnSupprimer = document.createElement("Supprimer");
-          console.log(btnSupprimer);
+          // console.log(btnSupprimer);
         });
       });
     });
