@@ -60,16 +60,17 @@ const Kanap = window.localStorage.getItem("nom");
 
 let button = document.getElementById("addToCart");
 button.addEventListener("click", function (e) {
-  
   let quantity = document.getElementById("quantity").value;
   let colors = document.getElementById("colors").value;
+  document.querySelector("#addToCart").style.color = "rgb(0, 205, 0)";
+  document.querySelector("#addToCart").textContent = "Produit ajouté !";
 
-  let ListLocalStorage = JSON.parse(localStorage.getItem("List"));
+  let ListLocalStorage = JSON.parse(localStorage.getItem("productList"));
   if (ListLocalStorage == null) {
-    localStorage.setItem("List", JSON.stringify([]));
+    localStorage.setItem("productList", JSON.stringify([]));
   }
 
-  let listLocalStorage = JSON.parse(localStorage.getItem("List"));
+  let listLocalStorage = JSON.parse(localStorage.getItem("productList"));
 
   var articleExist = false;
 
@@ -80,7 +81,7 @@ button.addEventListener("click", function (e) {
     if (OneArticle.id == id && OneArticle.color == colors) {
       listLocalStorage[index].quantity =
         parseInt(listLocalStorage[index].quantity) + parseInt(quantity);
-      localStorage.setItem("List", JSON.stringify(listLocalStorage));
+      localStorage.setItem("productList", JSON.stringify(listLocalStorage));
       articleExist = true;
     }
   });
@@ -92,6 +93,6 @@ button.addEventListener("click", function (e) {
     };
 
     listLocalStorage.push(newKanap);
-    localStorage.setItem("List", JSON.stringify(listLocalStorage));
+    localStorage.setItem("productList", JSON.stringify(listLocalStorage));
   }
 });

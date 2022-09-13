@@ -2,10 +2,13 @@
 
 let cartItem = document.getElementById("cart__items");
 
-let recupLs = JSON.parse(localStorage.getItem("List"));
+var totalPrice = 0;
+var totalQuantity = 0;
+
+let recupLs = JSON.parse(localStorage.getItem("productList"));
 console.log(recupLs);
 
-recupLs.forEach((recupL) => {
+recupLs.forEach((recupL, index) => {
   console.log(recupL);
   fetch(`http://localhost:3000/api/products/${recupL.id}`)
     .then((res) => res.json())
@@ -46,6 +49,7 @@ recupLs.forEach((recupL) => {
 
       let balisePrice = document.createElement("p");
       balisePrice.innerText = res.price + " €";
+      totalPrice = totalPrice + res.price * recupL.quantity;
       baliseItemContentDescription.appendChild(balisePrice);
 
       let baliseItemContentSettings = document.createElement("div");
@@ -62,9 +66,9 @@ recupLs.forEach((recupL) => {
       );
       baliseItemContentSettings.appendChild(baliseItemContentSettingsQuantity);
 
-      let balisePQuantity = document.createElement("p");
-      balisePQuantity.innerText = "Qté : ";
-      baliseItemContentSettingsQuantity.appendChild(balisePQuantity);
+      let baliseProductQuantity = document.createElement("p");
+      baliseProductQuantity.innerText = "Qté : ";
+      baliseItemContentSettingsQuantity.appendChild(baliseProductQuantity);
 
       let baliseInputQuantity = document.createElement("input");
       baliseInputQuantity.setAttribute("type", "number");
@@ -74,6 +78,12 @@ recupLs.forEach((recupL) => {
       baliseInputQuantity.setAttribute("max", "100");
       baliseInputQuantity.setAttribute("value", recupL.quantity);
       baliseItemContentSettingsQuantity.appendChild(baliseInputQuantity);
+
+      baliseInputQuantity.addEventListener("change", function (e) {
+        alert(baliseInputQuantity.value);
+
+        alert (index);
+      });
 
       let baliseItemContentSettingsDelete = document.createElement("div");
       baliseItemContentSettingsDelete.setAttribute(
@@ -86,35 +96,19 @@ recupLs.forEach((recupL) => {
       baliseDeleteItem.setAttribute("class", "deleteItem");
       baliseItemContentSettingsDelete.appendChild(baliseDeleteItem);
       baliseDeleteItem.textContent = "Supprimer";
+      baliseDeleteItem.addEventListener("click", (e) => {
+        recupLs.splice(index, 1);
+        localStorage.setItem("productList", JSON.stringify(recupLs));
+        location.reload();
+      });
 
-      let modifyQuantityItem = document.querySelectorAll(
-        "cart_item_content_quantity"
-      );
-      cart_item_content_quantity.forEach((productQuantity) =>
-        console.log(modifyQuantityItem.dataset.quantity)
-      );
+      var baliseTotalPrice = document.getElementById("totalPrice");
+      baliseTotalPrice.innerText = totalPrice;
+      
+      var baliseTotalQuantity = document.getElementById("totalQuantity");
+      baliseTotalQuantity.innerText = totalQuantity;
       
 
-      function modifyQuantity(productQuantity) {
-        let quantity = cart_item_content_quantity();
-        cart_item_content_quantity.filter(p => p.id == productQuantity.id);
-      }
-
-      let btnSupprimer = document.querySelectorAll(".deleteItem");
-      btnSupprimer.forEach((article) => {
-        article.addEventListener("click", (e) => {
-          let btnSupprimer = document.createElement("Supprimer");
-          // console.log(btnSupprimer);
-        });
-      });
+      
     });
 });
-
-/*---------------------------------------*/
-// AFFICHAGE PRIX TOTAL
-/*-------------------------------------*/
-
-// totalQuantity = document.querySelector("#totalQuantity");
-// baliseItemContentSettingsQuantity.quantity * balisePrice.price;
-// let totalPriceItems = document.getElementById("totalPrice");
-// totalPriceItems.textContent = totalQunatity;
