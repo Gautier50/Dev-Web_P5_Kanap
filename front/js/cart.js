@@ -1,13 +1,22 @@
-//Récupération produits existants du localStorage
-
 let cartItem = document.getElementById("cart__items");
+
+//---------------------------------------------------------------------------------//
+// DÉCLARATION DES VARIABLES PRIX TOTAL, QUANTITÉ TOTALE ET CHANGEMENT DE QUANTITÉ //
+//---------------------------------------------------------------------------------//
 
 var totalPrice = 0;
 var totalQuantity = 0;
+var changeQuantity = 0;
 
+//--------------------------------------------------//
+// AFFICHAGE DU TABLEAU COMPRENANT CHAQUE ARTICLES //
+//------------------------------------------------//
 let recupLs = JSON.parse(localStorage.getItem("productList"));
 console.log(recupLs);
 
+//---------------------------------------------------------------------//
+// AFFICHAGE DE CHACUN DES ARTICLES DU TABLEAU DANS LA BOUCLE FOREACH //
+//-------------------------------------------------------------------//
 recupLs.forEach((recupL, index) => {
   console.log(recupL);
   fetch(`http://localhost:3000/api/products/${recupL.id}`)
@@ -79,10 +88,16 @@ recupLs.forEach((recupL, index) => {
       baliseInputQuantity.setAttribute("value", recupL.quantity);
       baliseItemContentSettingsQuantity.appendChild(baliseInputQuantity);
 
+      //----------------------------------------------//
+      // CHANGEMENT DE QUANTITÉ DES PRODUITS DU PANIER//
+      //----------------------------------------------//
       baliseInputQuantity.addEventListener("change", function (e) {
-        alert(baliseInputQuantity.value);
-
-        alert (index);
+        baliseInputQuantity.value = recupL.quantity;
+        // recupLs[index].quantity = baliseChangeQuantity.quantity;
+        localStorage.setItem("productList", JSON.stringify(recupLs));
+        location.reload();
+        // alert(baliseInputQuantity.value);
+        // alert (index);
       });
 
       let baliseItemContentSettingsDelete = document.createElement("div");
@@ -92,6 +107,9 @@ recupLs.forEach((recupL, index) => {
       );
       baliseItemContentSettings.appendChild(baliseItemContentSettingsDelete);
 
+      //------------------------------------//
+      // SUPPRESSION DES ARTICLES DU PANIER //
+      //------------------------------------//
       let baliseDeleteItem = document.createElement("p");
       baliseDeleteItem.setAttribute("class", "deleteItem");
       baliseItemContentSettingsDelete.appendChild(baliseDeleteItem);
@@ -102,13 +120,88 @@ recupLs.forEach((recupL, index) => {
         location.reload();
       });
 
+      //------------------------------------------//
+      //          AFFICHAGE DU PRIX TOTAL         //
+      //------------------------------------------//
       var baliseTotalPrice = document.getElementById("totalPrice");
       baliseTotalPrice.innerText = totalPrice;
-      
+
+      //------------------------------------------//
+      //          AFFICHAGE QUANTITÉ TOTALE      //
+      //----------------------------------------//
       var baliseTotalQuantity = document.getElementById("totalQuantity");
       baliseTotalQuantity.innerText = totalQuantity;
-      
 
-      
+      var baliseChangeQuantity = document.createElement("class");
+      baliseChangeQuantity.innerText = changeQuantity;
     });
+
+  //-----------------------------------------//
+  //              FORMULAIRE                 //
+  //-----------------------------------------//
+  //   let baliseCartOrder = document.querySelectorAll(
+  //     'input [type="text"], input [type="email"]'
+  //   );
+
+  // const errorDisplay = (tag, message, valid) => {
+  // const container = document.querySelector("." + tag + "-container");
+  // const span = document.querySelector("." + tag + "-container span");
+
+  // if (!valid) {
+  //   container.classList.add("error");
+  //   span.textContent = message;
+  // } else {
+  //   container.classList.remove("error");
+  //   span.textContent = message;
+  // }
+  // }
+  //   let firstNameChecker = (value) => {
+  //     if (value.length > 0 && (value.length < 3 || value.length > 20)
+  //     ) {
+  //       errorDisplay("firstName", "Le prénom doit faire entre 3 et 20 caractères");
+  //       firstName = null;
+  //     // } else if (!value.match(() {
+  // errorDisplay("firstName", "Le prénom ne doit pas contenir de caractères spéciaux");
+  // firstName = null;
+  //     } else {
+  //       errorDisplay("firstName", "", true);
+  //       firstName = value
+  //     }
+  //   let lastNameChecker = (value) => {
+  //     console.log(value);
+  //   };
+  //   let adressChecker = (value) => {
+  //   };
+  //   let cityChecker = (value) => {
+  //   };
+  //   let emailChecker = (value) => {
+  //     if (!value.match(/^((\w[^\W]+)[.-]?){1,}@(([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/)) {
+  //       errorDisplay('email', "le mail n'est pas valide");
+  //       email = null;
+  //     } else {
+  //       errorDisplay("email", "", true);
+  //       email = value;
+  //     }
+  //   };
+  // baliseCartOrder.forEach((input) => {
+  //   input.addEventListener("input", (e) => {
+  //     switch (e.target.id) {
+  //       case "firstName":
+  //         firstNameChecker(e.target.value);
+  //         break;
+  //       case "lastName":
+  //         lastNameChecker(e.target.value);
+  //         break;
+  //       case "adress":
+  //         adressChecker(e.target.value);
+  //         break;
+  //       case "city":
+  //         cityChecker(e.target.value);
+  //         break;
+  //       case "email":
+  //         emailChecker(e.target.value);
+  //         break;
+  //       default:
+  //         null;
+  //     }
 });

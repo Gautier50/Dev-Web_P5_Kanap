@@ -27,6 +27,9 @@ function makeImage(imageUrl, altTxt) {
   if (parent != null) parent.appendChild(image);
 }
 
+//---------------------------------------------//
+//           AFFICHAGE DES ARTICLES           //
+//-------------------------------------------//
 function makeTitle(name) {
   const h1 = document.querySelector("#title");
   if (h1 != null) h1.textContent = name;
@@ -55,7 +58,9 @@ function makeColors(colors) {
   }
 }
 
-//-----localStorage-------------
+//--------------------------------------------//
+//              LOCAL STORAGE                //
+//------------------------------------------//
 const Kanap = window.localStorage.getItem("nom");
 
 let button = document.getElementById("addToCart");

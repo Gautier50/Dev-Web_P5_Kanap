@@ -14,6 +14,10 @@ fetch("http://localhost:3000/api/products")
               <p class="productDescription">${product.description}</p>
             </article>
           </a>`;*/
+
+      //----------------------------------------------//
+      // AFFICHAGE DES ARTICLES SUR LA PAGE D'ACCUEIL //
+      //----------------------------------------------//
       let baliselink = document.createElement("a");
       baliselink.setAttribute("href", `./product.html?id=${product._id}`);
       getBalise.appendChild(baliselink);
