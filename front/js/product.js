@@ -19,6 +19,7 @@ function Otherdata(Kanap) {
   makeColors(colors);
 }
 
+//  AFFICHAGE DES ARTICLES DE LA PAGE PRODUCT //
 function makeImage(imageUrl, altTxt) {
   const image = document.createElement("img");
   image.src = imageUrl;
@@ -27,9 +28,6 @@ function makeImage(imageUrl, altTxt) {
   if (parent != null) parent.appendChild(image);
 }
 
-//---------------------------------------------//
-//           AFFICHAGE DES ARTICLES           //
-//-------------------------------------------//
 function makeTitle(name) {
   const h1 = document.querySelector("#title");
   if (h1 != null) h1.textContent = name;
@@ -58,9 +56,7 @@ function makeColors(colors) {
   }
 }
 
-//--------------------------------------------//
-//              LOCAL STORAGE                //
-//------------------------------------------//
+//                LOCAL STORAGE                //
 const Kanap = window.localStorage.getItem("nom");
 
 let button = document.getElementById("addToCart");
@@ -94,7 +90,7 @@ button.addEventListener("click", function (e) {
     let newKanap = {
       id: id,
       color: colors,
-      quantity: quantity,
+      quantity: parseInt(quantity),
     };
 
     listLocalStorage.push(newKanap);
