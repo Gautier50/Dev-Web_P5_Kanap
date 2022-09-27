@@ -54,7 +54,7 @@ recupLs.forEach((recupL, index) => {
       totalPrice = totalPrice + res.price * recupL.quantity;
       baliseItemContentDescription.appendChild(balisePrice);
 
-      totalQuantity = totalQuantity + recupL.quantity;
+      totalQuantity = parseInt(totalQuantity) + parseInt(recupL.quantity);
 
       let baliseItemContentSettings = document.createElement("div");
       baliseItemContentSettings.setAttribute(
@@ -86,15 +86,19 @@ recupLs.forEach((recupL, index) => {
       // MODIFICATION DES QUANTITÉS D'UN PRODUIT DANS LE PANIER //
       baliseInputQuantity.addEventListener("change", function (e) {
         let valueQuantityInput = baliseInputQuantity.value;
-        recupLs[index].quantity = valueQuantityInput;
+        if (baliseInputQuantity.value > 100 || baliseInputQuantity.value < 1) {
+          alert("Veuillez modifier la quantité de produits du panier !");
+          baliseInputQuantity.value = 1;
+          recupLs[index].quantity = baliseInputQuantity.value;
+        } else {
+          recupLs[index].quantity = valueQuantityInput;
+        }
         localStorage.setItem("productList", JSON.stringify(recupLs));
+        location.reload();
       });
 
       // MISE À JOUR QUANTITÉS DES PRODUITS //
-      
-      
 
-    
       let baliseItemContentSettingsDelete = document.createElement("div");
       baliseItemContentSettingsDelete.setAttribute(
         "class",
@@ -123,99 +127,95 @@ recupLs.forEach((recupL, index) => {
     });
 });
 
-//              FORMULAIRE            //
+//  FORMULAIRE   //
 
-// FORMULAIRE DE CONTACT, VÉRIFICATION DU FORMULAIRE UNIQUEMENT AU CLIC SUR LE BOUTON COMMANDER //
-const orderButton = document.querySelector("#order");
-orderButton.addEventListener("click", (e) => {
-  submitForm();
-});
+// RÉCUPÉRATION DE CHACUN DES ÉLÉMENTS DU FORMULAIRE À PARTIR DU DOM //
+let inputFirstName = document.getElementById("firstName");
+let inputLastName = document.getElementById("lastName");
+let inputAdress = document.getElementById("address");
+let inputCity = document.getElementById("city");
+let inputEmail = document.getElementById("email");
 
-function submitForm(e) {
-  e.preventDefault();
-  if (cart.length === 0) alert("Veuillez ajouter des articles au panier");
-  const body = makeRequestBody();
-  fetch("http://localhost:3000/api/products/order", {
-    method: "POST",
-    body: JSON.stringify(body),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  then((res) => res.json());
-  then((data) => console.log(data));
-  console.log(form.elements.firstName.value);
-}
-function makeRequestBody() {
-  const form = document.querySelector(".cart__order__form");
-  const body = {
-    contact: {
-      firstName: "firstName",
-      lastName: "lastName",
-      adress: "adress",
-      city: "city",
-      email: "email",
-    },
-    products: ["productsId"],
+let submitOrder = document.getElementById("order");
+
+// CRÉATION DES REGEX //
+let regexFirstName = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
+let regexLastName = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
+let regexAdress = /^([0-9]*) ([a-zA-Z,\. ]*)/;
+let regexCity = /^[a-zA-Z ]+$/;
+let regexEmail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
+
+// RÉCUPÉRATION DES BALISES <p> INDIQUANT UNE ERREUR EN CAS DE REFUS DE LA VALIDATION DE L'INPUT DU FORMULAIRE //
+let baliseFirstNameErrorMessage = document.getElementById("firstNameErrorMsg");
+let baliseLastNameErrorMessage = document.getElementById("lastNameErrorMsg");
+let baliseAdressErrorMessage = document.getElementById("addressErrorMsg");
+let baliseCityErrorMessage = document.getElementById("cityErrorMsg");
+let baliseEmailErrorMessage = document.getElementById("emailErrorMsg");
+
+// SI LE LOCALSTORAGE CONTIENT DES ÉLÉMENTS ON VALIDE LE FORMULAIRE GRÂCE AU BOUTON //
+submitOrder.addEventListener("click", (event) => {
+  event.preventDefault();
+
+  // RÉCUPÈRE LA VALEUR ENTRÉE DANS L'INPUT DE CHAQUE ÉLÉMENTS DU FORMULAIRE //
+  let checkFirstName = inputFirstName.value;
+  let checkLastName = inputLastName.value;
+  let checkAdress = inputAdress.value;
+  let checkCity = inputCity.value;
+  let checkEmail = inputEmail.value;
+
+  const validationForm = () => {
+    if (recupLs === null) {
+      alert("Vous n'avez séléctionné aucun produit !");
+      return false;
+    } else if (
+      regexFirstName.test(checkFirstName) == false ||
+      checkFirstName === null
+    ) {
+      baliseFirstNameErrorMessage.innerHTML = "Veillez renseigner votre prénom";
+      return false;
+    } else if (
+      regexLastName.test(checkLastName) == false ||
+      checkLastName === null
+    ) {
+      baliseLastNameErrorMessage.innerHTML = "Veillez renseigner votre nom";
+      return false;
+    } else if (regexAdress.test(checkAdress) == false) {
+      baliseAdressErrorMessage.innerHTML =
+        "Veillez renseigner votre adresse avec les informations suivantes : Numéro, voie, nom de la voie, code postal";
+      return false;
+    } else if (regexCity.test(checkCity) == false) {
+      baliseCityErrorMessage.innerHTML = "Veuillez renseigner votre ville";
+      return false;
+    } else if (regexEmail.test(checkEmail) == false) {
+      baliseEmailErrorMessage.innerHTML = "Saisie de l'adresse mail incorrect";
+      return false;
+    } else {
+      // CRÉATION D'UN OBJET CONTACT //
+      let contact = {
+        firstName: firstName.value,
+        lastName: lastName.value,
+        address: address.value,
+        city: city.value,
+        email: email.value,
+      };
+
+      // CRÉATION D'UN TABLEAU POUR Y INSÉRER TOUT LES PRODUITS DE LA COMMANDE AINSI QUE LEURS QUANTITÉS //
+
+      let products = [];
+
+      // PARCOURS LE LOCALSTORAGE ET PUSH LES ID DANS LA VARIABLE PRODUCTS //
+      for (let product of recupLs) {
+        products.push(product.idSelectedProduct);
+      }
+
+      // CRÉE UN OBJET CONENANT LA LISTE DES INFORMATIONS DU FORMULAIRE ET DES PRODUITS DE LA COMMANDE //
+
+      let userOrder = { contact, products };
+
+      // CRÉATION DE LA REQUÊTE POST SUR L'API AFIN D'Y ENVOYER L'OBJET userOrder ET RÉCUPÉRER L'ID DE LA COMMANDE //
+
+      this.product.postContact(userOrder);
+    }
   };
-  return body;
-}
-
-// function form() {
-//   var inputFirstName = document.getElementById("firstName").value;
-//   var inputLastName = document.getElementById("lastName").value;
-//   var inputAdress = document.getElementById("address").value;
-//   var inputCity = document.getElementById("city").value;
-//   var inputEmail = document.getElementById("email").value;
-
-//   console.log(inputAdress);
-
-//   var baliseFirstNameErrorMessage =
-//     document.getElementById("firstNameErrorMsg");
-//   var baliseLastNameErrorMessage = document.getElementById("lastNameErrorMsg");
-//   var baliseAdressErrorMessage = document.getElementById("addressErrorMsg");
-//   var baliseCityErrorMessage = document.getElementById("cityErrorMsg");
-//   var baliseEmailErrorMessage = document.getElementById("emailErrorMsg");
-
-//   let regexFirstName = /^[a-zA-Z0-9]+$/;
-//   let regexLastName = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-//   let regexAdress = /^([0-9]*) ([a-zA-Z,\. ]*)/;
-//   let regexCity = /^[a-zA-Z ]+$/;
-//   let regexEmail = /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/;
-
-//   FormIsGood = true;
-
-//   // VÉRIFICATION PRÉNOM //
-//   if (regexFirstName.test(inputFirstName) === false) {
-//     baliseFirstNameErrorMessage.innerHTML += `Erreur de prénom`;
-//     FormIsGood = false;
-//   }
-
-//   // VÉRIFICATION NOM //
-//   if (regexLastName.test(inputLastName) === false) {
-//     baliseLastNameErrorMessage.innerHTML += `Erreur de nom`;
-//     FormIsGood = false;
-//   }
-
-//   // VÉRIFICATION ADRESSE //
-//   if (regexAdress.test(inputAdress) === false) {
-//     baliseAdressErrorMessage.innerHTML += `Erreur d'adresse`;
-//     FormIsGood = false;
-//   }
-
-//   // VÉRIFICATION VILLE //
-//   if (regexCity.test(inputCity) === false) {
-//     baliseCityErrorMessage.innerHTML += `Erreur de nom de ville`;
-//     FormIsGood = false;
-//   }
-
-//   // VÉRIFICATION EMAIL //
-//   if (regexEmail.test(inputEmail) === false) {
-//     baliseEmailErrorMessage.innerHTML += `Erreur d'adresse Email`;
-//     FormIsGood = false;
-//   }
-//   if (FormIsGood === true) {
-//     alert("Vous avez remplis tout les champs");
-//   }
-//   return false;
-// }
+  validationForm();
+});
