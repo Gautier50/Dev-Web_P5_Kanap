@@ -155,6 +155,13 @@ let baliseEmailErrorMessage = document.getElementById("emailErrorMsg");
 // SI LE LOCALSTORAGE CONTIENT DES ÉLÉMENTS ON VALIDE LE FORMULAIRE GRÂCE AU BOUTON //
 submitOrder.addEventListener("click", (event) => {
   event.preventDefault();
+  // On suppose que tout le formulaire est valide
+  let formOK = true;
+
+  // si formOK est true, on peut valider la commande, sinon on ne fait rien
+  if (formOK === true) {
+    // validationForm();
+  }
 
   // RÉCUPÈRE LA VALEUR ENTRÉE DANS L'INPUT DE CHAQUE ÉLÉMENTS DU FORMULAIRE //
   let checkFirstName = inputFirstName.value;
@@ -192,29 +199,38 @@ submitOrder.addEventListener("click", (event) => {
     } else {
       // CRÉATION D'UN OBJET CONTACT //
       let contact = {
-        firstName: firstName.value,
-        lastName: lastName.value,
-        address: address.value,
-        city: city.value,
-        email: email.value,
+        firstName: checkFirstName,
+        lastName: checkLastName,
+        address: checkAdress,
+        city: checkCity,
+        email: checkEmail,
       };
 
       // CRÉATION D'UN TABLEAU POUR Y INSÉRER TOUT LES PRODUITS DE LA COMMANDE AINSI QUE LEURS QUANTITÉS //
-
       let products = [];
 
       // PARCOURS LE LOCALSTORAGE ET PUSH LES ID DANS LA VARIABLE PRODUCTS //
       for (let product of recupLs) {
-        products.push(product.idSelectedProduct);
+        products.push(product.id);
       }
 
       // CRÉE UN OBJET CONENANT LA LISTE DES INFORMATIONS DU FORMULAIRE ET DES PRODUITS DE LA COMMANDE //
 
-      let userOrder = { contact, products };
+      let userOrder = { contact: contact, products: products };
 
       // CRÉATION DE LA REQUÊTE POST SUR L'API AFIN D'Y ENVOYER L'OBJET userOrder ET RÉCUPÉRER L'ID DE LA COMMANDE //
-
-      this.product.postContact(userOrder);
+      let orderId = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userOrder),
+      };
+      console.log(userOrder);
+      fetch("http://localhost:3000/api/products/order", orderId)
+        .then((response) => response.json())
+        .then((data) => {
+          // Redirection vers la page confirmation //
+          window.location = `/front/html/confirmation.html?id=${data.orderId}`;
+        });
     }
   };
   validationForm();
