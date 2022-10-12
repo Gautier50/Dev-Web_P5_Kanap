@@ -45,7 +45,6 @@ function makeColors(colors) {
 
   // On Attribue une couleur à chacun des articles //
   colors.forEach((color) => {
-
     // Création de l'élément "option" dans lequel on retrouve la couleur de l'article //
     const option = document.createElement("option");
     option.value = color;
@@ -68,7 +67,6 @@ let button = document.getElementById("addToCart");
 
 // Écoute de l'évènement click sur le bouton //
 button.addEventListener("click", function (e) {
-
   // Récupération de la couleur et de la quantité dans le HTML //
   let quantity = document.getElementById("quantity").value;
   let colors = document.getElementById("colors").value;
@@ -108,7 +106,9 @@ button.addEventListener("click", function (e) {
     }
   });
 
-  // On crée une variable comprenant l'id, la couleur et la quatité du ou des nouveaux kanap //
+  // Si l'article existe déjà, on lui ajoute la quantité souhaitée //
+  if (articleExist == false) {
+    // On crée une variable comprenant l'id, la couleur et la quatité du ou des nouveaux kanap //
     let newKanap = {
       id: id,
       color: colors,
@@ -120,4 +120,5 @@ button.addEventListener("click", function (e) {
 
     // On actualise le Local Storage avec le ou les nouveaux kanaps //
     localStorage.setItem("productList", JSON.stringify(listLocalStorage));
+  }
 });
