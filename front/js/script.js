@@ -1,4 +1,6 @@
 var getBalise = document.getElementById("items");
+
+// On récupère les données de l'API grâce au fetch //
 fetch("http://localhost:3000/api/products")
   .then((res) => res.json())
   .then((data) => {

@@ -1,9 +1,6 @@
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const id = urlParams.get("id");
-if (id != null) {
-  let imageUrl, altText, articleName;
-}
 
 fetch(`http://localhost:3000/api/products/${id}`)
   .then((response) => response.json())
@@ -45,40 +42,64 @@ function makeDescription(description) {
 
 function makeColors(colors) {
   const select = document.querySelector("#colors");
-  if (select != null) {
-    colors.forEach((color) => {
-      const option = document.createElement("option");
-      option.value = color;
-      option.textContent = color;
-      console.log(option);
-      select.appendChild(option);
-    });
-  }
+
+  // On Attribue une couleur à chacun des articles //
+  colors.forEach((color) => {
+
+    // Création de l'élément "option" dans lequel on retrouve la couleur de l'article //
+    const option = document.createElement("option");
+    option.value = color;
+
+    // Affichage du texte de la couleur //
+    option.textContent = color;
+
+    // Affichage des options de couleur dans la console //
+    console.log(option);
+    select.appendChild(option);
+  });
 }
 
 //                LOCAL STORAGE                //
+
 const Kanap = window.localStorage.getItem("nom");
 
+// Récupération du bouton "addToCart" dans le HTML //
 let button = document.getElementById("addToCart");
+
+// Écoute de l'évènement click sur le bouton //
 button.addEventListener("click", function (e) {
+
+  // Récupération de la couleur et de la quantité dans le HTML //
   let quantity = document.getElementById("quantity").value;
   let colors = document.getElementById("colors").value;
+
+  // Modification du style et du texte du bouton "ajouter au panier" //
   document.querySelector("#addToCart").style.color = "rgb(0, 205, 0)";
   document.querySelector("#addToCart").textContent = "Produit ajouté !";
 
+  // Récupération du Local Storage //
   let ListLocalStorage = JSON.parse(localStorage.getItem("productList"));
+
+  // Si mon Local Storage est nul
+  // Alors on écrit un tableau vide dans notre Local Storage //
   if (ListLocalStorage == null) {
     localStorage.setItem("productList", JSON.stringify([]));
   }
 
+  // On récupère à nouveau notre Local Storage //
   let listLocalStorage = JSON.parse(localStorage.getItem("productList"));
 
   var articleExist = false;
 
+  // Boucle forEach sur notre Local Storage //
   listLocalStorage.forEach((OneArticle, index) => {
     console.log(OneArticle);
     console.log(id);
     console.log(colors);
+
+    // Si un article a déjà cet id et cette couleur,
+    // Alors on ajoute la quantité achetée sur l'article correspondant
+    // On actualise le Local Storage avec le nouvel article //
     if (OneArticle.id == id && OneArticle.color == colors) {
       listLocalStorage[index].quantity =
         parseInt(listLocalStorage[index].quantity) + parseInt(quantity);
@@ -86,14 +107,17 @@ button.addEventListener("click", function (e) {
       articleExist = true;
     }
   });
-  if (articleExist == false) {
+
+  // On crée une variable comprenant l'id, la couleur et la quatité du ou des nouveaux kanap //
     let newKanap = {
       id: id,
       color: colors,
       quantity: parseInt(quantity),
     };
 
+    // On push notre Local Storage avec le ou les nouveaux kanaps //
     listLocalStorage.push(newKanap);
+
+    // On actualise le Local Storage avec le ou les nouveaux kanaps //
     localStorage.setItem("productList", JSON.stringify(listLocalStorage));
-  }
 });
